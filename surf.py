@@ -1,8 +1,10 @@
+import time
 import os.path
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
 
 ## Setup chrome options
 chrome_options = Options()
@@ -60,8 +62,20 @@ while search_terms:
     # Wait for the search results to load
     driver.implicitly_wait(10)
 
-    # Go to the first result
-    first_result = driver.find_element(by=By.XPATH, value='/html/body/table[3]/tbody/tr/td[2]/div/table/tbody/tr[2]/td/table[2]/tbody/tr[2]/td[2]/a[1]')
+    try:
+        # Go to the first result
+        first_result = driver.find_element(by=By.XPATH, value='/html/body/table[3]/tbody/tr/td[2]/div/table/tbody/tr[2]/td/table[2]/tbody/tr[2]/td[2]/a[1]')
+    except NoSuchElementException:
+        # The element was not found, write the search term to the file and move on to the next search term
+        with open("missing_terms.txt", "a") as f:
+            f.write(search_term + "\n")
+        search_terms.pop(0)
+        # Write the updated search terms back to the file
+        with open("search_terms.txt", "w") as f:
+            f.writelines(search_terms)
+        continue
+
+    # If the element was found, click it
     first_result.click()
 
     # Wait for the page to load
@@ -74,8 +88,8 @@ while search_terms:
     # Remove the used search term from the list
     search_terms.pop(0)
 
-    # Wait for the page to load
-    driver.implicitly_wait(10)
+    # Feels like we're going too fast, so slow down
+    time.sleep(1)
 
     # Write the updated search terms back to the file
     with open("search_terms.txt", "w") as f:
