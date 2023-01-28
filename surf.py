@@ -1,3 +1,4 @@
+import sys
 import time
 import os.path
 from selenium import webdriver
@@ -17,8 +18,12 @@ webdriver_service = Service(f"{homedir}/chromedriver/stable/chromedriver")
 driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
 
 # Read the search terms from the file
-with open("search_terms.txt") as f:
-    search_terms = f.readlines()
+if (sys.argv[1]):
+    with open(sys.argv[1]) as f:
+        search_terms = f.readlines()
+else:
+    with open("search_terms.txt") as f:
+        search_terms = f.readlines()
 
 with open("website.txt") as f:
     website = f.read().rstrip()
@@ -28,8 +33,6 @@ with open("search_id.txt") as f:
 
 # Iterate over the search terms
 while search_terms:
-    # Get the first search term and strip leading/trailing whitespace
-    search_term = search_terms[0].strip()
 
     driver.get(website)
 
@@ -47,6 +50,10 @@ while search_terms:
     # Find the search box and enter the search query
     search_box = driver.find_element(by=By.ID, value="searchinput")
     search_box.clear()  # Clear any previous search term
+
+    # Get the first search term and strip leading/trailing whitespace
+    search_term = search_terms[0].strip()
+
     search_box.send_keys(search_term)
 
     # Find the search button and click it
@@ -71,8 +78,12 @@ while search_terms:
             f.write(search_term + "\n")
         search_terms.pop(0)
         # Write the updated search terms back to the file
-        with open("search_terms.txt", "w") as f:
-            f.writelines(search_terms)
+        if (sys.argv[1]):
+            with open(sys.argv[1], "w") as f:
+                f.writelines(search_terms)
+        else:
+            with open("search_terms.txt", "w") as f:
+                f.writelines(search_terms)
         continue
 
     # If the element was found, click it
@@ -92,8 +103,12 @@ while search_terms:
     time.sleep(1)
 
     # Write the updated search terms back to the file
-    with open("search_terms.txt", "w") as f:
-        f.writelines(search_terms)
+    if (sys.argv[1]):
+        with open(sys.argv[1], "w") as f:
+            f.writelines(search_terms)
+    else:
+        with open("search_terms.txt", "w") as f:
+            f.writelines(search_terms)
 
 # Close the browser
 driver.close()
