@@ -9,6 +9,8 @@ from selenium.common.exceptions import NoSuchElementException
 
 ## Setup chrome options
 chrome_options = Options()
+chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
+chrome_options.add_extension("/home/daelynj/rarbg-surf/extension_1_46_0_0.crx")
 
 # Set path to chromedriver as per your configuration
 homedir = os.path.expanduser("~")
@@ -39,6 +41,7 @@ while search_terms:
     if ("threat_defence" in driver.current_url):
         # Wait for the page to load
         driver.implicitly_wait(10)
+        time.sleep(1)
 
         input("Enter captcha: ")
         driver.find_element(by=By.ID, value="button_submit").click()
@@ -47,27 +50,17 @@ while search_terms:
     # Wait for the page to load
     driver.implicitly_wait(10)
 
-    # Find the search box and enter the search query
-    search_box = driver.find_element(by=By.ID, value="searchinput")
-    search_box.clear()  # Clear any previous search term
-
     # Get the first search term and strip leading/trailing whitespace
     search_term = search_terms[0].strip()
 
-    search_box.send_keys(search_term)
-
-    # Find the search button and click it
-    search_button = driver.find_element(by=By.XPATH, value=f'//*[@id="{search_id}"]/table/tbody/tr[1]/td[2]/button')
-    search_button.click()
-
-    # Wait for the search results to load
-    driver.implicitly_wait(10)
+    driver.get(website + "?search=" + search_term)
 
     # Chances are a spam window opened up, go back to the initialpage
     driver.switch_to.window(driver.window_handles[0])
 
     # Wait for the search results to load
     driver.implicitly_wait(10)
+    time.sleep(1)
 
     try:
         # Go to the first result
@@ -91,6 +84,7 @@ while search_terms:
 
     # Wait for the page to load
     driver.implicitly_wait(10)
+    time.sleep(1)
 
     # Find the download link and click it
     download_link = driver.find_element(by=By.XPATH, value='/html/body/table[3]/tbody/tr/td[2]/div/table/tbody/tr[2]/td/div/table/tbody/tr[1]/td[2]/a[1]')
