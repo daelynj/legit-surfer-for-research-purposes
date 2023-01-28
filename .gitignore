@@ -7,3 +7,5 @@ missing_terms.txt
 backup/backups
 backup/folder_name.txt
 backup/search_terms.txt
+search_files
+*.crx
